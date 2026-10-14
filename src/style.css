@@ -1,3 +1,33 @@
 * {
   margin: 0;
 }
+
+body {
+  position: relative;
+}
+
+.eyelid {
+  position: absolute;
+  left: 0;
+  width: 100vw;
+  height: 50vh;
+  filter: blur(0.5);
+  z-index: 0;
+}
+
+.top {
+  top: 0;
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgb(0, 0, 0) 20%);
+  height: 20%;
+  /* transform: scaleY(0.2); */
+}
+
+.bottom {
+  bottom: 0;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    rgb(0, 0, 0) 20%
+  );
+  height: 20%;
+}

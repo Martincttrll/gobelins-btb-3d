@@ -45,12 +45,12 @@ export default class Sea extends THREE.Object3D {
         uSurfaceColor: {
           value: new THREE.Color("#d5d9f9"),
         },
-        uColorOffset: { value: 0.25 },
-        uColorMultiplier: { value: 0.15 },
+        uColorOffset: { value: 0.1 },
+        uColorMultiplier: { value: 0.3 },
         uSmallWavesElevation: { value: 0.3 },
-        uSmallWavesFrequency: { value: 3.0 },
-        uSmallWavesSpeed: { value: 0.2 },
-        uSmallIterations: { value: 4.0 },
+        uSmallWavesFrequency: { value: 2.0 },
+        uSmallWavesSpeed: { value: 0.6 },
+        uSmallIterations: { value: 2.6 },
       },
       fragmentShader: frag,
       vertexShader: vert,
@@ -74,25 +74,27 @@ export default class Sea extends THREE.Object3D {
   changeSeaState() {
     this.isCalm = !this.isCalm;
     if (this.isCalm) {
-      this.material.uniforms.depthColor = "#0e3b55";
-      this.material.uniforms.surfaceColor = "#d5d9f9";
-      this.material.uniforms.uBigWavesElevation = 0.2;
-      this.material.uniforms.uBigWavesSpeed = 0.75;
-      this.material.uniforms.uColorOffset = 0.25;
-      this.material.uniforms.uSmallWavesElevation = 0.15;
-      this.material.uniforms.uSmallWavesFrequency = 2;
-      this.material.uniforms.uSmallWavesSpeed = 0.6;
-      this.material.uniforms.uSmallIterations = 4;
+      this.material.uniforms.uDepthColor.value.set("#1281c1");
+      this.material.uniforms.uSurfaceColor.value.set("#cfd2f0");
+      this.material.uniforms.uBigWavesElevation.value = 0.2;
+      this.material.uniforms.uBigWavesSpeed.value = 0.6;
+      this.material.uniforms.uColorMultiplier.value = 0.29;
+      this.material.uniforms.uColorOffset.value = 0.1;
+      this.material.uniforms.uSmallWavesElevation.value = 0.1;
+      this.material.uniforms.uSmallWavesFrequency.value = 1.25;
+      this.material.uniforms.uSmallWavesSpeed.value = 0.2;
+      this.material.uniforms.uSmallIterations.value = 2.8;
     } else {
-      this.material.uniforms.depthColor = "#1281c1";
-      this.material.uniforms.surfaceColor = "#83b0ed";
-      //   this.material.uniforms.uBigWavesElevation = 0.2;
-      //   this.material.uniforms.uBigWavesSpeed = 0.6;
-      //   this.material.uniforms.uColorOffset = 0.1;
-      //   this.material.uniforms.uSmallWavesElevation = 0.1;
-      //   this.material.uniforms.uSmallWavesFrequency = 1.25;
-      //   this.material.uniforms.uSmallWavesSpeed = 0.2;
-      //   this.material.uniforms.uSmallIterations = 2.8;
+      this.material.uniforms.uDepthColor.value.set("#0e3b55");
+      this.material.uniforms.uSurfaceColor.value.set("#d5d9f9");
+      this.material.uniforms.uBigWavesElevation.value = 0.2;
+      this.material.uniforms.uBigWavesSpeed.value = 0.75;
+      this.material.uniforms.uColorMultiplier.value = 0.29;
+      this.material.uniforms.uColorOffset.value = 0.1;
+      this.material.uniforms.uSmallWavesElevation.value = 0.3;
+      this.material.uniforms.uSmallWavesFrequency.value = 2;
+      this.material.uniforms.uSmallWavesSpeed.value = 0.6;
+      this.material.uniforms.uSmallIterations.value = 2.3;
     }
   }
 
@@ -128,6 +130,11 @@ export default class Sea extends THREE.Object3D {
       .on("change", (e) =>
         this.material.uniforms.uSurfaceColor.value.set(e.value),
       );
+    folder.addBinding(this.material.uniforms.uColorMultiplier, "value", {
+      min: 0,
+      max: 3,
+      label: "uColorMultiplier",
+    });
     folder.addBinding(this.material.uniforms.uColorOffset, "value", {
       min: 0,
       max: 10,
@@ -153,10 +160,6 @@ export default class Sea extends THREE.Object3D {
       max: 5,
       label: "uSmallIterations",
     });
-
-    folder
-      .addButton({ title: "change Sea State" })
-      .on("click", this.changeSeaState.bind(this));
 
     return folder;
   }
