@@ -45,8 +45,6 @@ export default class SceneSea extends THREE.Scene {
   }
 
   update(data = {}) {
-    // console.log(data);
-    // if (!this.sea) return;
     this.sea.update({
       elapsed: data.elapsed,
     });
@@ -57,7 +55,7 @@ export default class SceneSea extends THREE.Scene {
     this.sea.changeSeaState();
     this.isCalm = !this.isCalm;
     if (this.isCalm) {
-      this.renderer.setClearColor(0xffffff);
+      this.renderer.setClearColor(0xd9f5ff);
     } else {
       this.renderer.setClearColor(0x000000);
     }
