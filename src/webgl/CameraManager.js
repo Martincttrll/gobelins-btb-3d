@@ -11,8 +11,12 @@ export default class CameraManager {
 
     this.cameraRange = {
       vert: 0.8,
-      horiz: 1.5,
+      horiz: 0.8,
     };
+
+    this.lookAtTarget = new THREE.Vector3();
+    this.lookAtCurrent = new THREE.Vector3();
+    this.lookAtLerp = 0.5;
 
     this.camera = this.createCamera();
     this.controls = this.createControls();
@@ -64,7 +68,11 @@ export default class CameraManager {
   update(options = {}) {
     if (!this.controlsEnabled) {
       this.camera.lookAt(0, 0, 0);
+      return;
     }
+
+    this.lookAtCurrent.lerp(this.lookAtTarget, this.lookAtLerp);
+    this.camera.lookAt(this.lookAtCurrent);
   }
 
   resize(width, height) {
@@ -103,7 +111,7 @@ export default class CameraManager {
     const x = (e.clientX / innerWidth) * 2 - 1;
     const y = (e.clientY / innerHeight) * 2 - 1;
 
-    this.camera.lookAt(
+    this.lookAtTarget.set(
       x * this.cameraRange.horiz,
       -y * this.cameraRange.vert,
       0,

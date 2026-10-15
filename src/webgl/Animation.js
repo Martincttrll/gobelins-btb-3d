@@ -12,8 +12,15 @@ export default class Animation {
     this.cameraManager = options.cameraManager;
     this.tl = this.createTimeline();
     this.createEyelids();
+    this.createWaterLayout();
 
     this.setupEventListeners();
+  }
+
+  createWaterLayout() {
+    const waterLayout = document.createElement("div");
+    waterLayout.classList.add("water-layout");
+    document.querySelector("body").appendChild(waterLayout);
   }
 
   createTimeline() {
@@ -103,29 +110,23 @@ export default class Animation {
         [],
         "<3.2",
       )
-      .call(
-        () => {
-          const waterLayout = document.createElement("div");
-          waterLayout.classList.add("water-layout");
-          document.querySelector("body").appendChild(waterLayout);
+      .to(
+        ".water-layout",
+        {
+          opacity: 0.7,
+          duration: 5,
         },
-        [],
-        "<0.2",
+        "<5.2",
       )
       .to(
-        ".eyelid",
+        ".text",
         {
-          height: "60%",
-          duration: 5,
-          ease: "power4.in",
+          opacity: 1,
+          duration: 4,
+          ease: "power4.out",
         },
-        "<5",
-      )
-      .to(".text", {
-        opacity: 1,
-        duration: 1,
-        ease: "power4.out",
-      });
+        "<6.5",
+      );
   }
 
   //Lightning
@@ -144,7 +145,7 @@ export default class Animation {
   }
 
   animateLightning() {
-    const stormColor = new THREE.Color(0x041824);
+    const stormColor = new THREE.Color(this.scene.params.stormSkyColor);
     const flashColor = new THREE.Color(0xffffff);
     const color = stormColor.clone();
     const intensity = { value: 0 };

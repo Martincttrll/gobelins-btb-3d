@@ -15,16 +15,17 @@ export default class Sea extends THREE.Object3D {
       uBigWavesElevation: this.isCalm ? 0.2 : 0.2,
       uBigWavesFrequency: this.isCalm
         ? new THREE.Vector2(4, 1.5)
-        : new THREE.Vector2(4, 1.5),
-      uBigWavesSpeed: this.isCalm ? 0.75 : 0.6,
-      uColorOffset: this.isCalm ? 0.25 : 0.1,
-      uSmallWavesElevation: this.isCalm ? 0.15 : 0.1,
-      uSmallWavesFrequency: this.isCalm ? 3 : 1.25,
-      uSmallWavesSpeed: this.isCalm ? 0.2 : 0.2,
-      uSmallIterations: this.isCalm ? 4 : 2.8,
+        : new THREE.Vector2(1.3, 1.2),
+      uBigWavesSpeed: this.isCalm ? 0.75 : 0.75,
+      uColorOffset: this.isCalm ? 0.0 : 0.1,
+      uSmallWavesElevation: this.isCalm ? 0.15 : 0.27,
+      uSmallWavesFrequency: this.isCalm ? 3 : 0.91,
+      uSmallWavesSpeed: this.isCalm ? 0.2 : 0.57,
+      uSmallIterations: this.isCalm ? 4 : 3.32,
     };
 
     this.material = this.createSeaMaterial();
+    this.syncColorParams();
     this.sea = this.createSea();
     this.folder = this.createDebugFolder();
   }
@@ -36,18 +37,18 @@ export default class Sea extends THREE.Object3D {
         uBigWavesElevation: { value: 0.03 },
         uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
         uBigWavesSpeed: { value: 0.6 },
-        uDepthColor: { value: new THREE.Color("#5ea6d0") },
+        uDepthColor: { value: new THREE.Color("#0d7de7") },
         uSurfaceColor: {
           value: new THREE.Color("#ffffff"),
         },
-        uColorOffset: { value: 0.1 },
+        uColorOffset: { value: 0.0 },
         uColorMultiplier: { value: 1.8 },
         uSmallWavesElevation: { value: 0.1 },
         uSmallWavesFrequency: { value: 1.25 },
         uSmallWavesSpeed: { value: 0.2 },
         uSmallIterations: { value: 2.8 },
 
-        uFogDensity: { value: 0.03 },
+        uFogDensity: { value: 0.08 },
         uFogColor: { value: new THREE.Color("#d9f5ff") },
       },
       fragmentShader: frag,
@@ -61,7 +62,7 @@ export default class Sea extends THREE.Object3D {
   }
 
   createSea() {
-    const geometry = new THREE.PlaneGeometry(150, 150, 512, 512);
+    const geometry = new THREE.PlaneGeometry(50, 50, 1024, 1024);
 
     const mesh = new THREE.Mesh(geometry, this.material);
     this.add(mesh);
@@ -74,9 +75,10 @@ export default class Sea extends THREE.Object3D {
   changeSeaState() {
     this.isCalm = !this.isCalm;
     if (this.isCalm) {
-      this.material.uniforms.uDepthColor.value.set("#1281c1");
+      this.material.uniforms.uDepthColor.value.set("#0d7de7");
       this.material.uniforms.uSurfaceColor.value.set("#ffffff");
       this.material.uniforms.uBigWavesElevation.value = 0.03;
+      this.material.uniforms.uBigWavesFrequency.value.set(4, 1.5);
       this.material.uniforms.uBigWavesSpeed.value = 0.6;
       this.material.uniforms.uColorMultiplier.value = 1.8;
       this.material.uniforms.uColorOffset.value = 0.1;
@@ -88,14 +90,23 @@ export default class Sea extends THREE.Object3D {
       this.material.uniforms.uDepthColor.value.set("#0e3b55");
       this.material.uniforms.uSurfaceColor.value.set("#d5d9f9");
       this.material.uniforms.uBigWavesElevation.value = 0.2;
+      this.material.uniforms.uBigWavesFrequency.value.set(1.3, 1.2);
       this.material.uniforms.uBigWavesSpeed.value = 0.75;
       this.material.uniforms.uColorMultiplier.value = 0.29;
       this.material.uniforms.uColorOffset.value = 0.1;
-      this.material.uniforms.uSmallWavesElevation.value = 0.3;
-      this.material.uniforms.uSmallWavesFrequency.value = 2;
-      this.material.uniforms.uSmallWavesSpeed.value = 0.6;
-      this.material.uniforms.uSmallIterations.value = 2.3;
+      this.material.uniforms.uSmallWavesElevation.value = 0.27;
+      this.material.uniforms.uSmallWavesFrequency.value = 0.91;
+      this.material.uniforms.uSmallWavesSpeed.value = 0.57;
+      this.material.uniforms.uSmallIterations.value = 3.32;
     }
+    this.syncColorParams();
+    this.debugger?.refresh();
+  }
+
+  syncColorParams() {
+    const { uDepthColor, uSurfaceColor } = this.material.uniforms;
+    this.params.depthColor = "#" + uDepthColor.value.getHexString();
+    this.params.surfaceColor = "#" + uSurfaceColor.value.getHexString();
   }
 
   update(data = {}) {
@@ -160,12 +171,6 @@ export default class Sea extends THREE.Object3D {
       max: 5,
       label: "uSmallIterations",
     });
-    folder.addBinding(this.material.uniforms.uFogDensity, "value", {
-      min: 0,
-      max: 1,
-      label: "uFogDensity",
-    });
-
     return folder;
   }
 }

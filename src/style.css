@@ -1,5 +1,6 @@
 * {
   margin: 0;
+  cursor: none;
 }
 
 body {
@@ -13,12 +14,12 @@ body {
   height: 50vh;
   filter: blur(0.5);
   z-index: 1;
+  height: 0%;
 }
 
 .top {
   top: 0;
   background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgb(0, 0, 0) 20%);
-  height: 10%;
   /* transform: scaleY(0.2); */
 }
 
@@ -29,7 +30,6 @@ body {
     rgba(0, 0, 0, 0),
     rgb(0, 0, 0) 20%
   );
-  height: 10%;
 }
 
 .end-layout {
@@ -53,11 +53,13 @@ body {
 }
 
 .water-layout {
-  background-color: rgba(62, 102, 141, 0.5);
+  background-color: rgb(14, 23, 33);
   width: 100vw;
   height: 100vh;
   position: absolute;
   left: 0;
   top: 0;
   z-index: 0;
+  opacity: 0;
+  pointer-events: none;
 }
