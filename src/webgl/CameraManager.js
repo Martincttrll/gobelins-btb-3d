@@ -1,10 +1,13 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import gsap from "gsap";
+import Animation from "./Animation";
 export default class CameraManager {
   constructor(options = {}) {
     this.renderer = options.renderer;
     this.debugger = options.debugger;
+
+    this.controlsEnabled = true;
 
     this.cameraRange = {
       vert: 0.8,
@@ -15,8 +18,6 @@ export default class CameraManager {
     this.controls = this.createControls();
 
     this.setupEventListeners();
-
-    this.createEyelids();
 
     this.debugFolder = this.createDebugFolder();
   }
@@ -60,43 +61,7 @@ export default class CameraManager {
     return controls;
   }
 
-  update() {}
-
-  createEyelids() {
-    const topEyelid = document.createElement("div");
-    topEyelid.classList.add("eyelid", "top");
-    const bottomEyelid = document.createElement("div");
-    bottomEyelid.classList.add("eyelid", "bottom");
-
-    document.querySelector("body").appendChild(topEyelid);
-    document.querySelector("body").appendChild(bottomEyelid);
-
-    this.scheduleBlink();
-  }
-
-  animateEyelids() {
-    if (this.tl && this.tl.isActive()) return;
-    this.tl = gsap.timeline();
-    this.tl
-      .to(".eyelid", {
-        height: "50%",
-        duration: 0.3,
-        ease: "power2.inOut",
-      })
-      .to(".eyelid", {
-        height: "10%",
-        duration: 0.4,
-        ease: "power2.out",
-      });
-  }
-
-  scheduleBlink() {
-    const delay = gsap.utils.random(3000, 7000);
-    this.blinkTimeout = setTimeout(() => {
-      this.animateEyelids();
-      this.scheduleBlink();
-    }, delay);
-  }
+  update(options = {}) {}
 
   resize(width, height) {
     this.renderWidth = width;
@@ -130,6 +95,7 @@ export default class CameraManager {
   }
 
   pointerMoveHandler(e) {
+    if (!this.controlsEnabled) return;
     const x = (e.clientX / innerWidth) * 2 - 1;
     const y = (e.clientY / innerHeight) * 2 - 1;
 
@@ -163,9 +129,6 @@ export default class CameraManager {
     cameraFolder.addBinding(this.controls, "enabled").on("click", () => {
       //if enabled on vire les eyelids et on desactiv le handler cam rotation
     });
-    cameraFolder
-      .addButton({ title: "Animate eyelids" })
-      .on("click", this.animateEyelids);
     cameraFolder.addButton({ title: "Reset Camera" }).on("click", () => {
       sessionStorage.removeItem("cameraPosition");
       sessionStorage.removeItem("cameraTarget");

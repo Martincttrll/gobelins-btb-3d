@@ -38,24 +38,26 @@ export default class Sea extends THREE.Object3D {
         fogColor: { value: /*@__PURE__*/ new THREE.Color(0xffffff) },
 
         uTime: { value: 0.0 },
-        uBigWavesElevation: { value: 0.2 },
+        uBigWavesElevation: { value: 0.03 },
         uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
-        uBigWavesSpeed: { value: 0.75 },
-        uDepthColor: { value: new THREE.Color("#0e3b55") },
+        uBigWavesSpeed: { value: 0.6 },
+        uDepthColor: { value: new THREE.Color("#1281c1") },
         uSurfaceColor: {
-          value: new THREE.Color("#d5d9f9"),
+          value: new THREE.Color("#ffffff"),
         },
         uColorOffset: { value: 0.1 },
-        uColorMultiplier: { value: 0.3 },
-        uSmallWavesElevation: { value: 0.3 },
-        uSmallWavesFrequency: { value: 2.0 },
-        uSmallWavesSpeed: { value: 0.6 },
-        uSmallIterations: { value: 2.6 },
+        uColorMultiplier: { value: 1.8 },
+        uSmallWavesElevation: { value: 0.1 },
+        uSmallWavesFrequency: { value: 1.25 },
+        uSmallWavesSpeed: { value: 0.2 },
+        uSmallIterations: { value: 2.8 },
       },
       fragmentShader: frag,
       vertexShader: vert,
       fog: true,
     });
+
+    material.side = THREE.DoubleSide;
 
     return material;
   }
@@ -75,10 +77,10 @@ export default class Sea extends THREE.Object3D {
     this.isCalm = !this.isCalm;
     if (this.isCalm) {
       this.material.uniforms.uDepthColor.value.set("#1281c1");
-      this.material.uniforms.uSurfaceColor.value.set("#cfd2f0");
-      this.material.uniforms.uBigWavesElevation.value = 0.2;
+      this.material.uniforms.uSurfaceColor.value.set("#ffffff");
+      this.material.uniforms.uBigWavesElevation.value = 0.03;
       this.material.uniforms.uBigWavesSpeed.value = 0.6;
-      this.material.uniforms.uColorMultiplier.value = 0.29;
+      this.material.uniforms.uColorMultiplier.value = 1.8;
       this.material.uniforms.uColorOffset.value = 0.1;
       this.material.uniforms.uSmallWavesElevation.value = 0.1;
       this.material.uniforms.uSmallWavesFrequency.value = 1.25;

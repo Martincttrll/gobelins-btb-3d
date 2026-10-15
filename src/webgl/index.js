@@ -28,7 +28,7 @@ export default class WebGLApplication {
       canvas: document.querySelector(".webgl"),
     });
 
-    renderer.setClearColor(0x00000);
+    renderer.toneMapping = THREE.LinearToneMapping;
     renderer.shadowMap.enabled = true;
 
     return renderer;

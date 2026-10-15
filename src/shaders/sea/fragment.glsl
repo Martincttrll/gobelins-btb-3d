@@ -13,6 +13,8 @@ void main() {
   vec3 color = mix(uDepthColor, uSurfaceColor, mixStrength);
   gl_FragColor = vec4(color, 1.0);
   
+  #include <tonemapping_fragment>
   #include <colorspace_fragment>
   #include <fog_fragment>
+
 }
