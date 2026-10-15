@@ -32,16 +32,11 @@ export default class Sea extends THREE.Object3D {
   createSeaMaterial() {
     const material = new THREE.ShaderMaterial({
       uniforms: {
-        fogDensity: { value: 0.00025 },
-        fogNear: { value: 1 },
-        fogFar: { value: 2000 },
-        fogColor: { value: /*@__PURE__*/ new THREE.Color(0xffffff) },
-
         uTime: { value: 0.0 },
         uBigWavesElevation: { value: 0.03 },
         uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
         uBigWavesSpeed: { value: 0.6 },
-        uDepthColor: { value: new THREE.Color("#1281c1") },
+        uDepthColor: { value: new THREE.Color("#5ea6d0") },
         uSurfaceColor: {
           value: new THREE.Color("#ffffff"),
         },
@@ -51,6 +46,9 @@ export default class Sea extends THREE.Object3D {
         uSmallWavesFrequency: { value: 1.25 },
         uSmallWavesSpeed: { value: 0.2 },
         uSmallIterations: { value: 2.8 },
+
+        uFogDensity: { value: 0.03 },
+        uFogColor: { value: new THREE.Color("#d9f5ff") },
       },
       fragmentShader: frag,
       vertexShader: vert,
@@ -63,7 +61,7 @@ export default class Sea extends THREE.Object3D {
   }
 
   createSea() {
-    const geometry = new THREE.PlaneGeometry(4, 4, 512, 512);
+    const geometry = new THREE.PlaneGeometry(150, 150, 512, 512);
 
     const mesh = new THREE.Mesh(geometry, this.material);
     this.add(mesh);
@@ -161,6 +159,11 @@ export default class Sea extends THREE.Object3D {
       min: 0,
       max: 5,
       label: "uSmallIterations",
+    });
+    folder.addBinding(this.material.uniforms.uFogDensity, "value", {
+      min: 0,
+      max: 1,
+      label: "uFogDensity",
     });
 
     return folder;

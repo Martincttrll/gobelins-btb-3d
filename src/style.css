@@ -12,7 +12,7 @@ body {
   width: 100vw;
   height: 50vh;
   filter: blur(0.5);
-  z-index: 0;
+  z-index: 1;
 }
 
 .top {
@@ -30,4 +30,34 @@ body {
     rgb(0, 0, 0) 20%
   );
   height: 10%;
+}
+
+.end-layout {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  .text {
+    color: white;
+    opacity: 0;
+    font-size: 20px;
+    z-index: 2;
+  }
+}
+
+.water-layout {
+  background-color: rgba(62, 102, 141, 0.5);
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
 }

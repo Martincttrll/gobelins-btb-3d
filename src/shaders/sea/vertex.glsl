@@ -8,8 +8,8 @@ uniform float uSmallWavesSpeed;
 uniform float uSmallIterations;
 
 varying float vElevation;
+varying vec4 vGLPosition;
 
-#include <fog_pars_vertex>
 
 
 // Classic Perlin 3D Noise 
@@ -121,11 +121,11 @@ void main()
     // Named mvPosition because <fog_vertex> reads it
     vec4 mvPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * mvPosition;
+    vGLPosition = projectedPosition;
 
 
 
     gl_Position = projectedPosition;
-    #include <fog_vertex>
 }
 
 

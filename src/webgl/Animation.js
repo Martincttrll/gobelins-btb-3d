@@ -1,5 +1,9 @@
 import * as THREE from "three";
 import gsap from "gsap";
+import GSDevTools from "gsap/GSDevTools";
+
+gsap.registerPlugin(GSDevTools);
+// GSDevTools.create({ css: { zIndex: 5 } });
 
 export default class Animation {
   constructor(options = {}) {
@@ -20,7 +24,7 @@ export default class Animation {
 
   beginAnimation() {
     this.renderer.toneMappingExposure = 1;
-    console.log(this.renderer.toneMapping);
+    this.stopBlinking();
 
     this.tl
       .to(this.renderer, {
@@ -60,11 +64,11 @@ export default class Animation {
       .to(
         ".eyelid",
         {
-          height: "55%",
+          height: "60%",
           duration: 2,
           ease: "power4.out",
         },
-        "<0.5",
+        ">",
       )
       .call(
         () => {
@@ -75,30 +79,53 @@ export default class Animation {
         [],
         "<0.5",
       )
-      .call(() => {
-        this.cameraManager.controlsEnabled = false;
-        this.cameraManager.camera.lookAt(0, 0, 0);
-      })
-      .to(".eyelid", {
-        height: "10%",
-        duration: 3,
-        ease: "power2.out",
-      })
+
+      .to(
+        ".eyelid",
+        {
+          height: "0%",
+          duration: 3,
+          ease: "power2.out",
+        },
+        "+=3",
+      )
 
       .to(this.cameraManager.camera.position, {
-        y: -4,
-        duration: 6,
+        y: -10,
+        duration: 12,
         ease: "power1.in",
       })
+      .call(
+        () => {
+          this.cameraManager.controlsEnabled = false;
+          this.animateEyelids(0.3);
+        },
+        [],
+        "<3.2",
+      )
+      .call(
+        () => {
+          const waterLayout = document.createElement("div");
+          waterLayout.classList.add("water-layout");
+          document.querySelector("body").appendChild(waterLayout);
+        },
+        [],
+        "<0.2",
+      )
       .to(
         ".eyelid",
         {
           height: "60%",
-          duration: 6,
-          ease: "power1.in",
+          duration: 5,
+          ease: "power4.in",
         },
-        "<2",
-      );
+        "<5",
+      )
+      .to(".text", {
+        opacity: 1,
+        duration: 1,
+        ease: "power4.out",
+      });
   }
 
   //Lightning
@@ -151,20 +178,32 @@ export default class Animation {
     this.scheduleBlink();
   }
 
-  animateEyelids() {
-    if (this.tl && this.tl.isActive()) return;
-    this.tl = gsap.timeline();
-    this.tl
+  stopBlinking() {
+    clearTimeout(this.blinkTimeout);
+    this.blinkTimeout = null;
+    this.tlEyelids?.kill();
+  }
+
+  animateEyelids(delay = 0) {
+    if (this.tlEyelids && this.tlEyelids.isActive()) return;
+    const delayExp = "+=" + delay.toString();
+
+    this.tlEyelids = gsap.timeline();
+    this.tlEyelids
       .to(".eyelid", {
-        height: "50%",
+        height: "60%",
         duration: 0.3,
         ease: "power2.inOut",
       })
-      .to(".eyelid", {
-        height: "10%",
-        duration: 0.4,
-        ease: "power2.out",
-      });
+      .to(
+        ".eyelid",
+        {
+          height: "0%",
+          duration: 0.4,
+          ease: "power2.out",
+        },
+        delayExp,
+      );
   }
 
   scheduleBlink() {

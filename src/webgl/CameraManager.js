@@ -61,7 +61,11 @@ export default class CameraManager {
     return controls;
   }
 
-  update(options = {}) {}
+  update(options = {}) {
+    if (!this.controlsEnabled) {
+      this.camera.lookAt(0, 0, 0);
+    }
+  }
 
   resize(width, height) {
     this.renderWidth = width;
