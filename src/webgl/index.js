@@ -16,7 +16,7 @@ export default class WebGLApplication {
     this.elapsed = 0;
 
     this.renderer = this.createRenderer();
-    this.debugger = this.createDebugger();
+    // this.debugger = this.createDebugger();
     this.scene = this.createSceneSea();
 
     this.resize();

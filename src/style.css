@@ -1,10 +1,21 @@
+@font-face {
+  font-family: "Large";
+  src:
+    url("/Large-Roman.woff") format("woff"),
+    url("/Large-Roman.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   margin: 0;
-  cursor: none;
 }
 
 body {
   position: relative;
+  font-family: "Poppins";
+  overflow-y: hidden;
 }
 
 .eyelid {
@@ -45,6 +56,7 @@ body {
   pointer-events: none;
 
   .text {
+    font-family: "Large", "Poppins", sans-serif;
     color: white;
     opacity: 0;
     font-size: 20px;
@@ -53,7 +65,7 @@ body {
 }
 
 .water-layout {
-  background-color: rgb(14, 23, 33);
+  background-color: rgb(4, 20, 37);
   width: 100vw;
   height: 100vh;
   position: absolute;

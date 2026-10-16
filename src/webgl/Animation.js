@@ -3,17 +3,18 @@ import gsap from "gsap";
 import GSDevTools from "gsap/GSDevTools";
 
 gsap.registerPlugin(GSDevTools);
-// GSDevTools.create({ css: { zIndex: 5 } });
 
 export default class Animation {
   constructor(options = {}) {
     this.renderer = options.renderer;
     this.scene = options.scene;
     this.cameraManager = options.cameraManager;
+    this.animationDone = false;
+
     this.tl = this.createTimeline();
     this.createEyelids();
+    this.loadSounds();
     this.createWaterLayout();
-
     this.setupEventListeners();
   }
 
@@ -29,7 +30,22 @@ export default class Animation {
     return tl;
   }
 
+  loadSounds() {
+    this.audioThunder = new Audio("thunder.mp3");
+    this.audioRain = new Audio("rain.mp3");
+    this.audioSea = new Audio("calm-sea.mp3");
+  }
+
+  playAudio(audio) {
+    audio.play();
+  }
+
+  stopAudio(audio) {
+    audio.stop();
+  }
+
   beginAnimation() {
+    if (this.animationDone) return;
     this.renderer.toneMappingExposure = 1;
     this.stopBlinking();
 
@@ -41,6 +57,20 @@ export default class Animation {
       })
       .to(
         this.scene.background,
+        {
+          r: 1,
+          g: 1,
+          b: 1,
+          duration: 5,
+          ease: "power3.in",
+        },
+        "<",
+      )
+      .to(
+        [
+          this.scene.sky.material.uniforms.uTopColor.value,
+          this.scene.sky.material.uniforms.uBottomColor.value,
+        ],
         {
           r: 1,
           g: 1,
@@ -80,12 +110,18 @@ export default class Animation {
       .call(
         () => {
           this.scene.changeState();
+          this.scene.removeSky();
           this.renderer.toneMapping = THREE.NoToneMapping;
           this.scheduleLightning();
         },
         [],
         "<0.5",
       )
+
+      .call(() => {
+        this.playAudio(this.audioThunder);
+        // this.playAudio(this.audioRain);
+      })
 
       .to(
         ".eyelid",
@@ -102,13 +138,28 @@ export default class Animation {
         duration: 12,
         ease: "power1.in",
       })
+      .to(
+        this.cameraManager.cameraRange,
+        {
+          globalAmplitude: 0,
+          duration: 1,
+        },
+        "<",
+      )
+      // .to(this.scene.drowning, {
+      //   baseY: () => -10 * this.scene.params.sinkingForce,
+      //   duration: 12,
+      //   ease: "power1.in",
+      // })
       .call(
         () => {
-          this.cameraManager.controlsEnabled = false;
-          this.animateEyelids(0.3);
+          // this.cameraManager.controlsEnabled = false;
+          // this.scene.params.swellStrength = 0;
+          this.animateEyelids(0.5);
+          this.cameraManager.canSwim = true;
         },
         [],
-        "<3.2",
+        "<3",
       )
       .to(
         ".water-layout",
@@ -125,8 +176,15 @@ export default class Animation {
           duration: 4,
           ease: "power4.out",
         },
-        "<6.5",
-      );
+        "<5.5",
+      )
+      .to(".eyelid", {
+        height: "60%",
+        duration: 1,
+      })
+      .call(() => {
+        this.animationDone = false;
+      });
   }
 
   //Lightning
@@ -196,6 +254,12 @@ export default class Animation {
         duration: 0.3,
         ease: "power2.inOut",
       })
+      .call(() => {
+        if (delay > 0) {
+          console.log("underwated");
+          document.querySelector(".water-layout").style.opacity = 0.7;
+        }
+      })
       .to(
         ".eyelid",
         {
@@ -208,7 +272,7 @@ export default class Animation {
   }
 
   scheduleBlink() {
-    const delay = gsap.utils.random(3000, 7000);
+    const delay = gsap.utils.random(2000, 6000);
     this.blinkTimeout = setTimeout(() => {
       this.animateEyelids();
       this.scheduleBlink();

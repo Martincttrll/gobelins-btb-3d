@@ -2,6 +2,7 @@ import * as THREE from "three";
 import CameraManager from "./CameraManager";
 import Sea from "./Sea";
 import Animation from "./Animation";
+import Sky from "./Sky";
 import gsap from "gsap";
 
 export default class SceneSea extends THREE.Scene {
@@ -13,17 +14,36 @@ export default class SceneSea extends THREE.Scene {
 
     this.isCalm = true;
 
+    this.canSwim = false;
+    this.drowning = {
+      baseY: 0,
+      offset: 0,
+      velocity: 0,
+      strength: 1,
+    };
+    this.previousElapsed = 0;
+
     this.params = {
-      calmSkyColor: "#8dc7ff",
+      calmSkyColor: "#87ddff",
       stormSkyColor: "#041824",
       swellStrength: 0.08,
       swellSpeed: 1.2,
+      sinkingForce: 1,
+      swimImpulse: 2.5,
+      swimDecay: 0.65,
+      swimGravity: 6,
+      swimDrag: 1.5,
     };
+
+    this.sky = new Sky({ topColor: "#c3a1fb", bottomColor: "#beefff" });
+    this.add(this.sky);
 
     this.sea = this.createSea();
     this.cameraManager = this.createCameraManager();
     this.animation = this.createAnimation();
     this.debugFolder = this.createDebugFolder();
+
+    this.setupEventListeners();
   }
 
   get camera() {
@@ -78,6 +98,41 @@ export default class SceneSea extends THREE.Scene {
       this.params.swellStrength;
 
     this.sea.material.uniforms.uFogColor.value.copy(this.background);
+
+    const delta = Math.min(data.elapsed - this.previousElapsed, 1 / 30);
+    this.previousElapsed = data.elapsed;
+    if (this.canSwim) this.updateDrowning(delta);
+  }
+
+  startDrowning() {
+    this.drowning.baseY = this.camera.position.y;
+    this.drowning.offset = 0;
+    this.drowning.velocity = 0;
+    this.drowning.strength = 1;
+    this.canSwim = true;
+  }
+
+  updateDrowning(delta) {
+    const d = this.drowning;
+
+    d.velocity -= this.params.swimGravity * delta;
+    d.velocity *= Math.exp(-this.params.swimDrag * delta);
+    d.offset += d.velocity * delta;
+
+    if (d.offset < 0) {
+      d.offset = 0;
+      d.velocity = Math.max(d.velocity, 0);
+    }
+
+    this.camera.position.y = d.baseY + d.offset;
+  }
+
+  removeSky() {
+    if (!this.sky) return;
+    this.remove(this.sky);
+    this.sky.geometry.dispose();
+    this.sky.material.dispose();
+    this.sky = null;
   }
 
   changeState() {
@@ -93,6 +148,8 @@ export default class SceneSea extends THREE.Scene {
     }
     this.debugger?.refresh();
   }
+
+  setupEventListeners() {}
 
   resize(width, height) {
     this.cameraManager.resize(width, height);
@@ -138,6 +195,28 @@ export default class SceneSea extends THREE.Scene {
       min: 0,
       max: 5,
       label: "speed",
+    });
+
+    const swimFolder = sceneFolder.addFolder({ title: "Swim" });
+    swimFolder.addBinding(this.params, "swimImpulse", {
+      min: 0,
+      max: 10,
+      label: "impulse",
+    });
+    swimFolder.addBinding(this.params, "swimDecay", {
+      min: 0,
+      max: 1,
+      label: "decay",
+    });
+    swimFolder.addBinding(this.params, "swimGravity", {
+      min: 0,
+      max: 20,
+      label: "gravity",
+    });
+    swimFolder.addBinding(this.params, "swimDrag", {
+      min: 0,
+      max: 5,
+      label: "drag",
     });
 
     return sceneFolder;
